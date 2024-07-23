@@ -7,7 +7,6 @@ export default function Home() {
       <div className="flex flex-col gap-2">
         <Header />
         <h2>Mais vistos</h2>
-        <ProductList />
         
       </div>
     </>
