@@ -26,9 +26,10 @@ interface ProductItemProps {
       name: string;
     };
   };
+  itemOrientation: boolean; // Adicionei esta linha
 }
 
-const Item = ({ product }: ProductItemProps) => {
+const Item = ({ product, itemOrientation }: ProductItemProps) => {
   const router = useRouter();
 
   const handleProductClick = () => {
@@ -41,9 +42,20 @@ const Item = ({ product }: ProductItemProps) => {
   })}`;
 
   return (
-    <Card className="p-0 w-[150px]" onClick={handleProductClick}>
-      <CardContent className="p-1 flex flex-col justify-between">
-        <div className="relative min-w-[120px] aspect-square bg-slate-400 rounded-md">
+    <Card
+      className={`p-0 ${itemOrientation ? "w-full" : "w-50%"}`}
+      onClick={handleProductClick}
+    >
+      <CardContent
+        className={`p-1 flex ${
+          itemOrientation ? "flex-row " : "flex-col justify-between"
+        } `}
+      >
+        <div
+          className={`relative ${
+            itemOrientation ? "w-[120px] " : "min-w-[120px]"
+          } aspect-square bg-slate-400 rounded-md`}
+        >
           <Image
             src={product.imageUrls[0]}
             alt={product.name}
@@ -51,12 +63,26 @@ const Item = ({ product }: ProductItemProps) => {
             className="object-cover"
           />
         </div>
-        <div className="px-1 flex flex-col gap-2">
+        <div
+          className={`px-1 flex flex-col  ${
+            itemOrientation ? "gap-5 justify-between" : "gap-2"
+          }`}
+        >
           <div className="flex flex-col gap-0">
-              <h2 className="font-medium line-clamp-1 text-lg">{product.name}</h2>
-              <small>{product.Mark.name}</small>
+            <h2
+              className={`font-medium line-clamp-1 ${
+                itemOrientation ? "text-xl" : "text-lg"
+              }`}
+            >
+              {product.name}
+            </h2>
+            <small>{product.Mark.name}</small>
           </div>
-          <h3 className="scroll-m-20 text-lg font-semibold tracking-tight">
+          <h3
+            className={`scroll-m-20 ${
+              itemOrientation ? "text-xl" : "text-lg"
+            } font-semibold tracking-tight`}
+          >
             {formattedPrice}
           </h3>
         </div>
