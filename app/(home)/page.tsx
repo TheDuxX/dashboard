@@ -8,6 +8,7 @@ export default function Home() {
         <Header />
         <h2>Mais vistos</h2>
         <ProductList />
+        
       </div>
     </>
   );
