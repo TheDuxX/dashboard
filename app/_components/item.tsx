@@ -32,8 +32,22 @@ interface ProductItemProps {
 const Item = ({ product, itemOrientation }: ProductItemProps) => {
   const router = useRouter();
 
-  const handleProductClick = () => {
-    router.push(`/product/${product.id}`);
+  const handleProductClick = async () => {
+    try {
+      // Atualiza as visualizações do produto
+      const response = await fetch(`/api/products/${product.id}/views`, {
+        method: "PATCH",
+      });
+
+      if (response.ok) {
+        // Redireciona para a página do produto
+        router.push(`/product/${product.id}`);
+      } else {
+        console.error("Erro ao atualizar visualizações do produto");
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar visualizações do produto:", error);
+    }
   };
 
   const formattedPrice = `R$ ${product.price.toLocaleString("pt-BR", {
@@ -76,7 +90,9 @@ const Item = ({ product, itemOrientation }: ProductItemProps) => {
             >
               {product.name}
             </h2>
-            <small>{product.mark ? product.mark.name : "Marca não disponível"}</small>
+            <small>
+              {product.mark ? product.mark.name : "Marca não disponível"}
+            </small>
           </div>
           <h3
             className={`scroll-m-20 ${
