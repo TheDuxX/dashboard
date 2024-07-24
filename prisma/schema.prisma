@@ -8,20 +8,20 @@ datasource db {
 }
 
 model Category {
-  id      String    @id
+  id      String    @id @default(uuid())
   name    String    @unique
   Product Product[]
 }
 
 model Mark {
-  id      String    @id
+  id      String    @id @default(uuid())
   name    String    @unique
   Product Product[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Product {
-  id          String   @id
+  id          String   @id @default(uuid())
   name        String
   description String
   reference   String
@@ -32,13 +32,13 @@ model Product {
   markId      String
   imageUrls   String[] @default([])
   views       Int?     @default(0)
-  Category    Category @relation(fields: [categoryId], references: [id])
-  Mark        Mark     @relation(fields: [markId], references: [id])
+  categories  Category @relation(fields: [categoryId], references: [id])
+  marks       Mark     @relation(fields: [markId], references: [id])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Users {
-  id        String   @id @db.Uuid
+  id        String   @id @default(uuid())
   name      String?  @unique
   image_url String[]
   email     String?  @unique @db.VarChar
