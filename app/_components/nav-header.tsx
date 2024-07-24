@@ -11,6 +11,7 @@ const links = [
   { name: "Novo Produto", href: "/new-product" },
   { name: "Configurações", href: "/configuration" },
   { name: "Novo Usuário", href: "/new-user" },
+  { name: "Login", href: "/login" },
 ];
 
 const NavHeader = () => {

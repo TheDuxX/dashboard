@@ -32,7 +32,10 @@ const CreateAccountPage = () => {
       <div className="w-full flex flex-col items-center justify-between ">
         <div className="max-w-96 border border-solid p-5 rounded-lg gap-4 flex flex-col bg-white shadow-sm">
           <h1 className="text-2xl text-center">Login</h1>
-          <form className="flex flex-col gap-2">
+          <form
+            className="flex flex-col gap-2"
+            action={handleClickCreateAccountButton}
+          >
             <Input type="email" name="email" placeholder="Email" className="" />
             <Input
               type="password"
@@ -40,7 +43,9 @@ const CreateAccountPage = () => {
               placeholder="Senha"
               className=""
             />
-            <Button disabled={isPending}>{isPending ? <Loader2 className="animate-spin"/> : "Entrar"}</Button>
+            <Button disabled={isPending}>
+              {isPending ? <Loader2 className="animate-spin" /> : "Entrar"}
+            </Button>
           </form>
           <p className="text-sm ">
             Deseja recuperar um usuário?{" "}
