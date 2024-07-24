@@ -78,8 +78,8 @@ const Item = ({ product, itemOrientation }: ProductItemProps) => {
           />
         </div>
         <div
-          className={`px-1 flex flex-col  ${
-            itemOrientation ? "gap-5 justify-between" : "gap-2"
+          className={` flex flex-col  ${
+            itemOrientation ? "gap-5 justify-between px-5" : "gap-2 px-2"
           }`}
         >
           <div className="flex flex-col gap-0">
