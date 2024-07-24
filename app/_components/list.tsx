@@ -94,7 +94,7 @@ const ProductList = ({ product }: ProductListProps) => {
           {itemOrientation ? <Columns /> : <Rows />}
         </Button>
       </div>
-      <div className={`grid ${itemOrientation ? "grid-cols-1" : "grid-cols-2"} gap-4`}>
+      <div className={`grid ${itemOrientation ? "grid-cols-1 gap-1" : "grid-cols-2 gap-2"} `}>
         {sortedProducts.slice(0, itemCount).map((product) => (
           <Item key={product.id} product={product} itemOrientation={itemOrientation} />
         ))}
