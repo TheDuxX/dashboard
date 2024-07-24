@@ -33,7 +33,7 @@ const Item = ({ product, itemOrientation }: ProductItemProps) => {
   const router = useRouter();
 
   const handleProductClick = () => {
-    // router.push(`/product/${product.id}`);
+    router.push(`/product/${product.id}`);
   };
 
   const formattedPrice = `R$ ${product.price.toLocaleString("pt-BR", {

@@ -64,10 +64,10 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
             ))}
           </CarouselContent>
           {product.imageUrls.length > 1 && (
-            <CarouselPrevious className="absolute top-50% left-2 border-none " />
+            <CarouselPrevious className="absolute top-50% left-2 border-none bg-transparent " />
           )}
           {product.imageUrls.length > 1 && (
-            <CarouselNext className="absolute top-50% right-2 border-none " />
+            <CarouselNext className="absolute top-50% right-2 border-none bg-transparent" />
           )}
         </Carousel>
       </div>
