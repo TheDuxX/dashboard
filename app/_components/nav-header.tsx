@@ -16,7 +16,7 @@ const NavHeader = () => {
   const pathname = usePathname();
 
   return (
-    <>
+    <div>
       <div className="min-h-[75px] w-full rounded-md shadow-sm bg-white flex justify-between p-2 items-center">
         <Link href="/">
           <ChevronLeft className="stroke-1" />
@@ -31,7 +31,7 @@ const NavHeader = () => {
           <Image src="./vercel.svg" alt="avatar" fill className="object-fill" />
         </Avatar>
       </div>
-    </>
+    </div>
   );
 };
 
