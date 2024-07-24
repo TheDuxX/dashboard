@@ -36,7 +36,8 @@ const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);  
+  const [imagesUploaded, setImagesUploaded] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -141,11 +142,16 @@ const Form = () => {
       }
 
       setFormData((prev) => ({ ...prev, images: urls }));
-      setImageUrls([]);
-      setFiles([]);
-      submitFormData();
+      setImagesUploaded(true);
     });
   };
+
+  useEffect(() => {
+    if (imagesUploaded) {
+      submitFormData();
+      setImagesUploaded(false);
+    }
+  }, [imagesUploaded, formData.images]);
 
   return (
     <>
@@ -270,7 +276,7 @@ const Form = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button className="w-full" onClick={handleClickUploadImagesButton}>
+          <Button className="w-full" onClick={handleClickUploadImagesButton} disabled={isPending}>
             Salvar
           </Button>
           <Button
@@ -281,14 +287,7 @@ const Form = () => {
           >
             Cancelar
           </Button>
-        </div>
-        {/* {isLoading && (
-          <div className="flex justify-center items-center mt-4">
-            <div className="relative w-[40px] h-[40px] animate-spin-slow">
-              <Image src="/icon.png" alt="pneu" className="object-cover" fill />
-            </div>
-          </div>
-        )} */}
+        </div>        
       </form>
     </>
   );
