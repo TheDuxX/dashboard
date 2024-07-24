@@ -12,21 +12,21 @@ interface ProductItemProps {
     reference: string;
     status: boolean;
     date: Date;
-    price: number; // Agora é number
+    price: number;
     categoryId: string;
     markId: string;
     imageUrls: string[];
     views: number | null;
-    Category: {
+    category: {
       id: string;
       name: string;
     };
-    Mark: {
+    mark: {
       id: string;
       name: string;
     };
   };
-  itemOrientation: boolean; // Adicionei esta linha
+  itemOrientation: boolean;
 }
 
 const Item = ({ product, itemOrientation }: ProductItemProps) => {
@@ -76,7 +76,7 @@ const Item = ({ product, itemOrientation }: ProductItemProps) => {
             >
               {product.name}
             </h2>
-            <small>{product.Mark.name}</small>
+            <small>{product.mark ? product.mark.name : "Marca não disponível"}</small>
           </div>
           <h3
             className={`scroll-m-20 ${

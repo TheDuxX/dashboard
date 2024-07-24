@@ -2,11 +2,37 @@ import ProductList from "@/app/_components/list";
 import NavHeader from "@/app/_components/nav-header";
 import { db } from "@/app/_lib/prisma";
 
+type category = {
+  id: string;
+  name: string;
+};
+
+type mark = {
+  id: string;
+  name: string;
+};
+
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  reference: string;
+  status: boolean;
+  date: Date;
+  price: number;
+  categoryId: string;
+  markId: string;
+  imageUrls: string[];
+  views: number | null;
+  category: category; // Corrigido para 'categories'
+  mark: mark; // Corrigido para 'marks'
+};
+
 const Products = async () => {
   const products = await db.product.findMany({
     include: {
-      Category: true,
-      Mark: true,
+      category: true,
+      mark: true,
     },
   });
 

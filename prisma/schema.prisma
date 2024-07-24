@@ -32,8 +32,8 @@ model Product {
   markId      String
   imageUrls   String[] @default([])
   views       Int?     @default(0)
-  categories  Category @relation(fields: [categoryId], references: [id])
-  marks       Mark     @relation(fields: [markId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  mark        Mark     @relation(fields: [markId], references: [id])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
