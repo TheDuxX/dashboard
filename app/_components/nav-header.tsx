@@ -10,6 +10,7 @@ const links = [
   { name: "Produtos", href: "/products" },
   { name: "Novo Produto", href: "/new-product" },
   { name: "Configurações", href: "/configuration" },
+  { name: "Novo Usuário", href: "/new-user" },
 ];
 
 const NavHeader = () => {
