@@ -38,3 +38,19 @@ export async function loginAction(formData: FormData) {
     return { errorMessage: getErrorMessage(Error) };
   }
 }
+
+export async function signOutAction() {
+  try {
+
+    const { auth } = createSupabaseClient();
+
+    const { error } = await auth.signOut();
+
+    if (error) throw error;
+
+    return {errorMessage: null}
+
+  } catch {
+    return { errorMessage: getErrorMessage(Error) };
+  }
+}
