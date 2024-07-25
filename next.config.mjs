@@ -6,7 +6,7 @@ const nextConfig = {
         hostname: "utfs.io",
       },
       {
-        hostname: "illwfnxapeovbvjjlbee.supabase.co",
+        hostname: "trpxvxjnxygldjddxgpz.supabase.co",
       },
     ],
   },
