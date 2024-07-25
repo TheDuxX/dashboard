@@ -2,7 +2,7 @@ import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
 import { Button } from "@/app/_components/ui/button";
 import NavHeader from "@/app/_components/nav-header";
-import { signup } from "../login/actions";
+import { signup } from "../actions";
 
 export default function NewUser() {
   return (
@@ -16,8 +16,8 @@ export default function NewUser() {
           <Input id="password" name="password" type="password" required />
           <Label htmlFor="username">Username:</Label>
           <Input id="username" name="username" type="text" required />
-          <Label htmlFor="avatar_url">Avatar URL:</Label>
-          <Input id="avatar_url" name="avatar_url" type="url" />
+          <Label htmlFor="avatar">Avatar URL:</Label>
+          <Input id="avatar" name="avatar" type="url" />
           <div className="flex flex-col gap-1">
             <Button formAction={signup}>Criar</Button>
           </div>

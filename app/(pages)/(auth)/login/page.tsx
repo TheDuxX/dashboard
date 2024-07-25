@@ -1,6 +1,6 @@
 import { Input } from "@/app/_components/ui/input";
 import { Label } from "@/app/_components/ui/label";
-import { login, signup } from "./actions";
+import { login, signup } from "../actions";
 import { Button } from "@/app/_components/ui/button";
 import NavHeader from "@/app/_components/nav-header";
 
