@@ -25,6 +25,7 @@ export default function RootLayout({
         </div>
         <div>
           <Toaster
+            position="bottom-right"
             toastOptions={{
               style: {
                 textAlign: "center",
