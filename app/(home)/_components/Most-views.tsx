@@ -41,7 +41,7 @@ const MostViews = async () => {
   return (
     <>
       <h2 className="font-bold">Mais vistos</h2>
-      <div className="rounded-md flex gap-2 overflow-x-auto ">
+      <div className="rounded-md flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
         {sortedProducts.slice(0, 5).map((product) => (
             <Item key={product.id} product={product} />
         ))}
