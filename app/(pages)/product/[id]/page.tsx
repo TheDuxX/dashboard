@@ -81,7 +81,7 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold">{product.name}</h1>
         <div className="min-h-[75px] max-h-[100px] bg-gray-200 p-1 rounded-md">
-          <p className="text-md">{product.description}{product.views}</p>
+          <p className="text-md">{product.description}</p>
         </div>
         <h2 className="text-2xl font-bold my-2">
           R${" "}
