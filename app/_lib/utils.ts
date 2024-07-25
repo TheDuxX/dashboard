@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -26,4 +27,8 @@ export const getErrorMessage = (
     errorMessage = error.message;
   }
   return errorMessage;
+};
+
+export const convertDecimalToNumber = (decimal: Decimal): number => {
+  return parseFloat(decimal.toFixed(2));
 };
