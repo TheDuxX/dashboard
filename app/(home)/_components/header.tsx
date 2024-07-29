@@ -15,7 +15,7 @@ const Header = async () => {
     <>
       <div className="w-full min-h-[75px] bg-white rounded-md p-2 flex justify-between items-center shadow">
         <div className="flex flex-col gap-1">
-          <h2 className="font-medium text-lg">Olá, {user?.email}</h2>
+          <h2 className="font-medium text-lg">Olá, {user?.username}</h2>
           <div className="flex gap-1 text-sm">
             <p className="capitalize">
               {format(new Date(), "EEEE', 'd", {
@@ -31,7 +31,7 @@ const Header = async () => {
           </div>
         </div>
         <Avatar className="relative border border-solid min-h-[50px] min-w-[50px]">
-          <Image src="./vercel.svg" alt="avatar" fill className="object-fill" />
+          <Image src={user?.avatar} alt="avatar" fill className="object-fill" />
         </Avatar>
       </div>
     </>

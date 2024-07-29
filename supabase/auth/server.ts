@@ -33,20 +33,19 @@ export const getUser = async () => {
       },
     });
 
-    console.log(profileData?.username)
-
     if (!profileData) {
       console.error("Profile not found for user id:", authUser.id);
-      toast.error("usuário não encontrado")
+      toast.error("usuário não encontrado");
+      console.log("Não encontrado");
       return null;
     }
 
     // Verifica se username e avatar não são null
     if (profileData.username === null || profileData.avatar === null) {
-        console.error("Profile fields are null for user id:", authUser.id);
-        toast.error('Profile fields are null for user id:')
-        return null;
-      }
+      console.error("Profile fields are null for user id:", authUser.id);
+      toast.error("Profile fields are null for user id:");
+      return null;
+    }
 
     const profile: Profile = {
       username: profileData.username,
@@ -59,7 +58,7 @@ export const getUser = async () => {
     };
 
     return user;
-
+    
   } catch (error) {
     console.error("Error fetching profile:", error);
     return null;
