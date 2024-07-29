@@ -31,7 +31,7 @@ const Header = async () => {
           </div>
         </div>
         <Avatar className="relative border border-solid min-h-[50px] min-w-[50px]">
-          <Image src={user?.avatar} alt="avatar" fill className="object-fill" />
+          <Image src={user!.avatar} alt="avatar" fill className="object-fill" />
         </Avatar>
       </div>
     </>
