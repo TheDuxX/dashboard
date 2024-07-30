@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="`${inter.className}` p-2 bg-gray-100 overflow-x-hidden mb-[60px]">
+      <body className="`${inter.className}` bg-gray-100 overflow-x-hidden mb-[60px]">
         <div>
           {children}
           <Navigation />

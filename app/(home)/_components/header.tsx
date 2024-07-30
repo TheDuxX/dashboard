@@ -2,9 +2,15 @@ import { Avatar } from "@/app/_components/ui/avatar";
 import Image from "next/image";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { createClient } from "@/supabase/server";
-import { redirect } from "next/navigation";
 import { getUser } from "@/supabase/auth/server";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Logout } from "@/app/_components/logout-button";
 
 const wordlLink = " de ";
 
@@ -30,9 +36,31 @@ const Header = async () => {
             </p>
           </div>
         </div>
-        <Avatar className="relative border border-solid min-h-[50px] min-w-[50px]">
-          <Image src={user!.avatar} alt="avatar" fill className="object-fill" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-        </Avatar>
+        <div className="relative">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="relative border border-solid min-h-[50px] min-w-[50px]">
+                <Image
+                  src={user!.avatar}
+                  alt="avatar"
+                  fill
+                  className="object-fill"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuContent
+                className="min-w-[140px] border border-solid m-2 bg-white rounded-md p-2"
+                sideOffset={7}
+              >
+                <DropdownMenuItem>
+                  <Logout />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuPortal>
+          </DropdownMenu>
+        </div>
       </div>
     </>
   );

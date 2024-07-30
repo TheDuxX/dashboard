@@ -3,7 +3,6 @@
 import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
 
 export async function login(formData: FormData) {
   const supabase = createClient();
