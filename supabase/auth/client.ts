@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createSupabaseClient } from "../client";
 import { User } from "@/app/_lib/types";
 
@@ -10,22 +10,27 @@ function getAuth() {
 export function useGetUser() {
   const [user, setUser] = useState<User | null>(null);
 
-  const auth = getAuth();
+  useEffect(() => {
+    const auth = getAuth();
 
-  auth.onAuthStateChange(async (event, session) => {
-    const sessionUser = session?.user;
-    const shouldUpdate = sessionUser?.updated_at !== user?.updated_at;
-    if (shouldUpdate) {
-      if (sessionUser) {
-        const user: User = await fetch("/api/auth/get-user/route").then((res) =>
-          res.json()
-        );
-        setUser(user);
-      } else {
-        setUser(null);
+    const { data: authListener } = auth.onAuthStateChange(async (event, session) => {
+      const sessionUser = session?.user;
+      const shouldUpdate = sessionUser?.updated_at !== user?.updated_at;
+      if (shouldUpdate) {
+        if (sessionUser) {
+          const user: User = await fetch("/api/auth/get-user").then((res) => res.json());
+          setUser(user);
+        } else {
+          setUser(null);
+        }
       }
-    }
-  });
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [user]);
 
   return user;
 }
