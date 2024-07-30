@@ -12,6 +12,7 @@ const links = [
   { name: "Configurações", href: "/configuration" },
   { name: "Novo Usuário", href: "/new-user" },
   { name: "Login", href: "/login" },
+  { name: "Erro", href: "/error" },
 ];
 
 const NavHeader = () => {
