@@ -6,7 +6,7 @@ import NavHeader from "@/app/_components/nav-header";
 
 export default function LoginPage() {
   return (
-    <>
+    <div className="p-2">
       <NavHeader />
       <div className="py-4 flex items-center justify-center">
           <form className="flex flex-col gap-2 w-[70%] h-full">
@@ -19,6 +19,6 @@ export default function LoginPage() {
             </div>
           </form>
       </div>
-    </>
+    </div>
   );
 }

@@ -39,7 +39,7 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
   }
 
   return (
-    <>
+    <div className="p-2">
       <div className="rounded-lg" id="image">
         <Carousel
           opts={{
@@ -103,7 +103,7 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

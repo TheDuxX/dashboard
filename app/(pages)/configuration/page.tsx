@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Config = () => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 p-2">
       <NavHeader />
 
       <Link href="/login">

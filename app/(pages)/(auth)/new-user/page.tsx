@@ -81,7 +81,7 @@ export default function NewUser() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full p-2">
       <NavHeader />
       <form
         className="flex flex-col items-center justify-center w-full"
