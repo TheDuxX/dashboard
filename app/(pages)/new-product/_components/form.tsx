@@ -8,6 +8,7 @@ import { Label } from "@/app/_components/ui/label";
 import { Input } from "@/app/_components/ui/input";
 import { convertBlobUrlToFile } from "@/app/_lib/utils";
 import { uploadImage } from "@/supabase/storage/client";
+import { PlusIcon, XIcon } from "lucide-react";
 
 interface Category {
   id: string;
@@ -36,7 +37,7 @@ const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [files, setFiles] = useState<File[]>([]);  
+  const [files, setFiles] = useState<File[]>([]);
   const [imagesUploaded, setImagesUploaded] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -157,8 +158,47 @@ const Form = () => {
     <>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-2"
       >
+        {/* Imagens */}
+        <div className="flex items-center justify-start gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          <input
+            type="file"
+            multiple
+            ref={imageInputRef}
+            hidden
+            onChange={handleImageChange}
+            id="images"
+            placeholder="images"
+          />
+          <Button
+            type="button"
+            onClick={() => imageInputRef.current?.click()}
+            className="min-w-28 min-h-28"
+            variant="dashed"
+          >
+            <PlusIcon className="text-border" />
+          </Button>
+          {imageUrls.map((url, index) => (
+            <div key={index} className="relative min-w-28 aspect-square">
+              <Image
+                src={url}
+                fill
+                alt={`img-${index}`}
+                className="object-cover rounded-md"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="mini"
+                onClick={() => handleRemoveImage(index)}
+                className="absolute top-1 right-1"
+              >
+                <XIcon />
+              </Button>
+            </div>
+          ))}
+        </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">Nome do Produto</Label>
           <Input
@@ -240,43 +280,12 @@ const Form = () => {
           </div>
         </div>
 
-        {/* Imagens */}
-        <div>
-          <input
-            type="file"
-            multiple
-            ref={imageInputRef}
-            hidden
-            onChange={handleImageChange}
-            id="images"
-            placeholder="images"
-          />
-          <Button type="button" onClick={() => imageInputRef.current?.click()}>
-            Selecione as imagens
-          </Button>
-          <div className="flex gap-4 flex-wrap mt-4 max-h-64 overflow-y-auto">
-            {imageUrls.map((url, index) => (
-              <div key={index} className="relative">
-                <Image
-                  src={url}
-                  width={100}
-                  height={100}
-                  alt={`img-${index}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                >
-                  X
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="flex gap-2">
-          <Button className="w-full" onClick={handleClickUploadImagesButton} disabled={isPending}>
+          <Button
+            className="w-full"
+            onClick={handleClickUploadImagesButton}
+            disabled={isPending}
+          >
             Salvar
           </Button>
           <Button
@@ -287,7 +296,7 @@ const Form = () => {
           >
             Cancelar
           </Button>
-        </div>        
+        </div>
       </form>
     </>
   );
