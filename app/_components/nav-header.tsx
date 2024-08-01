@@ -14,6 +14,7 @@ const links = [
   { name: "Novo Usuário", href: "/new-user" },
   { name: "Login", href: "/login" },
   { name: "Erro", href: "/error" },
+  { name: "Perfil", href: "/configuration/profile" },
 ];
 
 const NavHeader = () => {
@@ -48,7 +49,7 @@ const NavHeader = () => {
             />
           ) : (
             <div className="flex items-end justify-center w-full h-full bg-gray-200">
-              <User size={40} className="p-0 m-0 stroke-1 text-gray-400"/>
+              <User size={40} className="p-0 m-0 stroke-1 text-gray-400" />
             </div>
           )}
         </Avatar>
