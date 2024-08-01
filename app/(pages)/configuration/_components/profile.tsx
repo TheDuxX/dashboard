@@ -1,4 +1,3 @@
-import NavHeader from "@/app/_components/nav-header";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { getUser } from "@/supabase/auth/server";
@@ -10,10 +9,9 @@ const Profile = async () => {
   return (
     <>
       <div className="w-full p-2">
-        <NavHeader />
         <form className="flex flex-col items-center justify-center w-full">
           <div className="py-4 flex flex-col items-center justify-center w-[70%]">
-            <div className="w-28 relative aspect-square rounded-full bg-white">
+            <div className="w-24 relative aspect-square rounded-full bg-white">
               <Image
                 src={user!.avatar}
                 alt="avatar"
@@ -38,12 +36,18 @@ const Profile = async () => {
                 required
                 placeholder={user?.email}
                 disabled
-              />        
+              />
               <div className="w-full flex gap-1">
                 <Button type="button" className="w-full">
                   Editar
                 </Button>
-                <Button type="button" variant="destructive" className="bg-red-500 text-white w-full">Excluir</Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="bg-red-500 text-white w-full"
+                >
+                  Excluir
+                </Button>
               </div>
             </div>
           </div>

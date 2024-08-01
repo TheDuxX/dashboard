@@ -4,9 +4,10 @@ import { Button } from "@/app/_components/ui/button";
 import NavHeader from "@/app/_components/nav-header";
 import { ChangeEvent, useRef, useState, useTransition } from "react";
 import { uploadImage } from "@/supabase/storage/client";
-import { signup } from "../actions";
+
 import toast from "react-hot-toast";
 import { PlusIcon, X } from "lucide-react";
+import { signup } from "../../(auth)/actions";
 
 export default function NewUser() {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -82,7 +83,6 @@ export default function NewUser() {
 
   return (
     <div className="w-full p-2">
-      <NavHeader />
       <form
         className="flex flex-col items-center justify-center w-full"
         onSubmit={handleSubmit}

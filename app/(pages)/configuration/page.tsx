@@ -1,13 +1,56 @@
 import NavHeader from "@/app/_components/nav-header";
-import { Button } from "@/app/_components/ui/button";
-import Link from "next/link";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/_components/ui/tabs";
+import Profile from "./_components/profile";
+import NewUser from "./_components/new-user";
+import { Card, CardContent } from "@/app/_components/ui/card";
 
 const Config = () => {
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-1 p-2">
       <NavHeader />
+      <div className="w-full">
+        <Tabs defaultValue="profile" className="w-full space-y-0">
+          <TabsList className="grid w-full grid-cols-3 m-0 p-0 space-x-2">
+            <TabsTrigger value="profile" className="rounded-b-none">
+              Perfil
+            </TabsTrigger>
+            <TabsTrigger value="new-user" className="rounded-b-none">
+              Novo usuário
+            </TabsTrigger>
+            <TabsTrigger value="test" className="rounded-b-none">
+              Teste
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="profile">
+            <Card className="rounded-t-none">
+              <CardContent className="p-0 py-2">
+                <Profile />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="new-user">
+            <Card className="rounded-t-none">
+              <CardContent className="p-0 py-2">
+                <NewUser />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="test">
+            <Card className="rounded-t-none">
+              <CardContent className="p-0 py-2 min-h-20">
+                
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
 
-      <div className="flex flex-row gap-2">
+      {/* <div className="flex flex-row gap-2">
         <Link href="/configuration/profile" className="w-1/2 aspect-square">
           <Button
             className="w-full h-full border-none shadow-sm"
@@ -24,7 +67,7 @@ const Config = () => {
             Criar usuário
           </Button>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
