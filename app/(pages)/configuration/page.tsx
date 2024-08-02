@@ -8,6 +8,8 @@ import {
 import Profile from "./_components/profile";
 import NewUser from "./_components/new-user";
 import { Card, CardContent } from "@/app/_components/ui/card";
+import NewMark from "./_components/new-mark";
+import NewCategory from "./_components/new-category";
 
 const Config = () => {
   return (
@@ -23,7 +25,7 @@ const Config = () => {
               Novo usuário
             </TabsTrigger>
             <TabsTrigger value="test" className="rounded-b-none">
-              Teste
+              Novo filtro
             </TabsTrigger>
           </TabsList>
           <TabsContent value="profile">
@@ -42,7 +44,10 @@ const Config = () => {
           </TabsContent>
           <TabsContent value="test">
             <Card className="rounded-t-none">
-              <CardContent className="p-0 py-2 min-h-20"></CardContent>
+              <CardContent className="p-0 py-2  min-h-20 space-y-4">
+                <NewCategory />
+                <NewMark />
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
