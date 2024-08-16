@@ -199,6 +199,7 @@ const Form = () => {
             </div>
           ))}
         </div>
+        {/* Nome */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">Nome do Produto</Label>
           <Input
