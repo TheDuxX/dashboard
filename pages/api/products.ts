@@ -6,7 +6,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "POST") {
+  if (req.method === "GET") {
+    try {
+      const products = await db.product.findMany();
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao buscar produtos" });
+    }
+  } else if (req.method === "POST") {
     const {
       name,
       description,

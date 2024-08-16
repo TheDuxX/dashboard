@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/app/_components/ui/carousel";
+import Link from "next/link";
 
 interface ProdctDetailsPageProps {
   params: {
@@ -89,10 +90,12 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
           <small className="text-sm font-normal pl-1">à vista</small>
         </h2>
         <div className="flex flex-row gap-2 ">
-          <Button className="flex gap-1 px-4 font-normal">
-            <Pencil size={20} className="stroke-1" />
-            Editar
-          </Button>
+          <Link href={(`/product/${product.id}/edit`)}>
+            <Button className="flex gap-1 px-4 font-normal">
+              <Pencil size={20} className="stroke-1" />
+              Editar
+            </Button>
+          </Link>
           <Button className="flex gap-1 px-4 font-normal" variant="outline">
             <Archive size={20} className="stroke-1" />
             Arquivar
