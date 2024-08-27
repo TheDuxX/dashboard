@@ -1,7 +1,7 @@
-import { EditProductForm } from "@/app/(pages)/test/_components/form";
 import NavHeader from "@/app/_components/nav-header";
 import { db } from "@/app/_lib/prisma";
 import toast from "react-hot-toast";
+import { EditProductForm } from "./_components/form";
 
 interface EditProductPageProps {
   params: {

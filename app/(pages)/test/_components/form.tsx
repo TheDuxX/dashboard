@@ -37,8 +37,7 @@ const formSchema = z.object({
     .string()
     .array()
     .nonempty({ message: "Deve conter pelo menos uma imagem." }),
-  price: z
-    .number({ message: "Campo obrigatório" }),
+  price: z.number({ message: "Campo obrigatório" }),
 });
 
 interface EditProductFormPageProps {
@@ -205,10 +204,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                         <PlusIcon className="text-border" />
                       </Button>
                       {imageUrls.map((url, index) => (
-                        <div
-                          key={index}
-                          className="relative min-w-28 min-h-28"
-                        >
+                        <div key={index} className="relative min-w-28 min-h-28">
                           <Image
                             src={url}
                             alt={`img-${index}`}
@@ -301,7 +297,10 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Categoria</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione a categoria" />
@@ -326,7 +325,10 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Marca</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione a marca" />
@@ -348,6 +350,9 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
 
             <Button type="submit" className="self-start min-w-28">
               {isLoading ? "Salvando..." : "Salvar"}
+            </Button>
+            <Button type="submit" className="self-start min-w-28">
+              Cancelar
             </Button>
           </form>
         </Form>
