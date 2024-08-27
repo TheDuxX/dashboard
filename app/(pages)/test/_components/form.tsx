@@ -20,10 +20,12 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 import { Button } from "@/app/_components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState, useTransition } from "react";
 import { PlusIcon, XIcon } from "lucide-react";
-import { db } from "@/app/_lib/prisma";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { convertDecimalToNumber } from "@/app/_lib/utils";
+import { uploadImage } from "@/supabase/storage/client";
 
 const formSchema = z.object({
   name: z.string(),
@@ -36,52 +38,46 @@ const formSchema = z.object({
     .array()
     .nonempty({ message: "Deve conter pelo menos uma imagem." }),
   price: z
-    .number({ message: "Campo obrigatório" })
-    .positive({ message: "Campo obrigatório." }),
+    .number({ message: "Campo obrigatório" }),
 });
 
 interface EditProductFormPageProps {
-  id: string;
-  name: string;
-  description: string;
-  reference: string;
-  status: boolean;
-  date: Date;
-  price: number;
-  categoryId: string;
-  markId: string;
-  imageUrls: string[];
-  views: number | null;
-  category: category; // Corrigido para 'categories'
-  mark: mark;
+  product: {
+    id: string;
+    name: string;
+    description: string;
+    reference: string;
+    status: boolean;
+    date: Date;
+    price: Decimal | number;
+    categoryId: string;
+    markId: string;
+    imageUrls: string[];
+    views: number | null;
+    category: Category;
+    mark: Mark;
+  };
 }
 
-type category = {
+type Category = {
   id: string;
   name: string;
 };
 
-type mark = {
+type Mark = {
   id: string;
   name: string;
 };
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Mark {
-  id: string;
-  name: string;
-}
 
 export function EditProductForm({ product }: EditProductFormPageProps) {
-  {
-    /* Buscar categorias e marcas */
-  }
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls);
+  const [files, setFiles] = useState<File[]>([]);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const fetchCategoriesAndMarks = async () => {
       try {
@@ -102,55 +98,103 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
     fetchCategoriesAndMarks();
   }, []);
 
-  {
-    /* Função para chamar o input file utilizando botão personalizado */
-  }
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const productPrice = convertDecimalToNumber(product.price);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      reference: "",
-      images: [],
-      price: undefined,
+      name: product.name,
+      description: product.description,
+      reference: product.reference,
+      category: product.categoryId,
+      mark: product.markId,
+      images: product.imageUrls,
+      price: productPrice,
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
+      setFiles([...files, ...filesArray]);
+      setImageUrls([...imageUrls, ...newImageUrls]);
+    }
   };
 
-  const formattedPrice = `R$ ${(
-    product.price as unknown as number
-  ).toLocaleString("pt-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  const handleRemoveImage = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setImageUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+  };
+
+  const submitFormData = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsLoading(true);
+      const uploadedImageUrls = await Promise.all(
+        files.map(async (file) => {
+          const { imageUrl, error } = await uploadImage({
+            file,
+            bucket: "tratorino-pics",
+          });
+
+          if (error) {
+            throw new Error("Erro ao fazer upload da imagem.");
+          }
+
+          return imageUrl;
+        })
+      );
+
+      const updatedValues = {
+        ...values,
+        images: [...imageUrls, ...uploadedImageUrls],
+      };
+
+      const response = await fetch(`/api/products/${product.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedValues),
+      });
+
+      if (response.ok) {
+        const updatedProduct = await response.json();
+        router.push(`/product/${updatedProduct.id}`);
+      } else {
+        alert("Erro ao atualizar o produto");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Erro ao enviar o formulário. Por favor, tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
       <div className="flex flex-col justify-center items-center space-y-2">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(submitFormData)}
             className="flex flex-col space-y-2 w-full"
           >
             {/* Imagens */}
             <FormField
               control={form.control}
-              name="name"
+              name="images"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <div className="flex items-center justify-start gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
                       <input
                         type="file"
+                        id="images"
                         hidden
                         multiple
-                        {...field}
                         ref={imageInputRef}
+                        onChange={handleImageChange}
                       />
                       <Button
                         type="button"
@@ -160,12 +204,14 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                       >
                         <PlusIcon className="text-border" />
                       </Button>
-                      {product?.imageUrls.map((url, index) => (
-                        <div className="relative min-w-28 min-h-28">
+                      {imageUrls.map((url, index) => (
+                        <div
+                          key={index}
+                          className="relative min-w-28 min-h-28"
+                        >
                           <Image
-                            key={index}
                             src={url}
-                            alt={`Image ${index}`}
+                            alt={`img-${index}`}
                             fill
                             className="object-cover rounded-md"
                           />
@@ -173,7 +219,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                             type="button"
                             variant="destructive"
                             size="mini"
-                            // onClick={() => handleRemoveImage(index)}
+                            onClick={() => handleRemoveImage(index)}
                             className="absolute top-1 right-1"
                           >
                             <XIcon />
@@ -195,7 +241,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                 <FormItem>
                   <FormLabel>Nome do produto</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder={product.name} {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,11 +256,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea
-                      autoCorrect="on"
-                      placeholder={product.description}
-                      {...field}
-                    />
+                    <Textarea {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -230,11 +272,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                   <FormItem>
                     <FormLabel>Preço</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder={product.price}
-                        {...field}
-                      />
+                      <Input {...field} type="number" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -247,11 +285,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                   <FormItem>
                     <FormLabel>Referência</FormLabel>
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder={product?.reference}
-                        {...field}
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -267,57 +301,54 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <Select {...form.register("category")}>
-                        <SelectTrigger className="text-gray-500">
-                          <SelectValue placeholder="Selecione uma categoria" />
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem value={category.id} key={category.id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="mark"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Marca</FormLabel>
-                    <FormControl>
-                      <Select {...form.register("category")}>
-                        <SelectTrigger className="text-gray-500">
-                          <SelectValue placeholder="Selecione uma categoria" />
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a marca" />
                         </SelectTrigger>
-                        <SelectContent>
-                          {marks.map((mark) => (
-                            <SelectItem value={mark.id} key={mark.id}>
-                              {mark.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
+                      </FormControl>
+                      <SelectContent>
+                        {marks.map((mark) => (
+                          <SelectItem key={mark.id} value={mark.id}>
+                            {mark.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="flex gap-2 w-3/4 ">
-              <Button type="submit" className="w-full">
-                Criar produto
-              </Button>
-              <Button type="reset" className="w-full" variant="destructive">
-                Limpar
-              </Button>
-            </div>
+
+            <Button type="submit" className="self-start min-w-28">
+              {isLoading ? "Salvando..." : "Salvar"}
+            </Button>
           </form>
         </Form>
       </div>

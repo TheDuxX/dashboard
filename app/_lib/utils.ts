@@ -30,5 +30,5 @@ export const getErrorMessage = (
 };
 
 export const convertDecimalToNumber = (decimal: Decimal): number => {
-  return parseFloat(decimal.toFixed(2));
+  return parseFloat(decimal.toString()); // Converter Decimal para string e depois para número
 };
