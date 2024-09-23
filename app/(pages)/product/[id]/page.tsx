@@ -11,6 +11,7 @@ import {
 } from "@/app/_components/ui/carousel";
 import Link from "next/link";
 import StatusChange from "./_component/status-button";
+import DeleteProduct from "./_component/delete-button";
 
 interface ProdctDetailsPageProps {
   params: {
@@ -98,10 +99,7 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
             </Button>
           </Link>
           <StatusChange productId={product.id} status={product.status}/>
-          <Button className="flex gap-1 px-4 font-normal" variant="destructive">
-            <Trash2 size={20} className="stroke-1" />
-            Excluir
-          </Button>
+          <DeleteProduct productId={product.id}/>
         </div>
       </div>
     </div>
