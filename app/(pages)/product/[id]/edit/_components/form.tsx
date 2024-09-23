@@ -26,6 +26,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { convertDecimalToNumber } from "@/app/_lib/utils";
 import { uploadImage } from "@/supabase/storage/client";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   name: z.string(),
@@ -38,6 +39,7 @@ const formSchema = z.object({
     .array()
     .nonempty({ message: "Deve conter pelo menos uma imagem." }),
   price: z.number({ message: "Campo obrigatório" }),
+  status: z.boolean(),
 });
 
 interface EditProductFormPageProps {
@@ -109,6 +111,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
       mark: product.markId,
       images: product.imageUrls,
       price: productPrice,
+      status: product.status,
     },
   });
 
@@ -348,11 +351,33 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
               />
             </div>
 
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="pl-2">{field.value ? "Produto Ativo" : "Produto Inativo"}</FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex flex-row gap-2">
               <Button type="submit" className="min-w-28">
                 {isLoading ? "Salvando..." : "Salvar"}
               </Button>
-              <Button type="button" variant="destructive" className="min-w-28" onClick={() => router.back()}>
+              <Button
+                type="button"
+                variant="destructive"
+                className="min-w-28"
+                onClick={() => router.back()}
+              >
                 <p>Cancelar</p>
               </Button>
             </div>
