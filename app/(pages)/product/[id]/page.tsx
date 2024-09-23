@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/app/_components/ui/carousel";
 import Link from "next/link";
+import StatusChange from "./_component/status-button";
 
 interface ProdctDetailsPageProps {
   params: {
@@ -89,17 +90,14 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
           {product.price ? product.price.toFixed(2).replace(".", ",") : "0,00"}
           <small className="text-sm font-normal pl-1">à vista</small>
         </h2>
-        <div className="flex flex-row gap-2 ">
-          <Link href={(`/product/${product.id}/edit`)}>
+        <div className="flex flex-row gap-2 w-full">
+          <Link href={`/product/${product.id}/edit`}>
             <Button className="flex gap-1 px-4 font-normal">
               <Pencil size={20} className="stroke-1" />
               Editar
             </Button>
           </Link>
-          <Button className="flex gap-1 px-4 font-normal" variant="outline">
-            <Archive size={20} className="stroke-1" />
-            Arquivar
-          </Button>
+          <StatusChange productId={product.id} status={product.status}/>
           <Button className="flex gap-1 px-4 font-normal" variant="destructive">
             <Trash2 size={20} className="stroke-1" />
             Excluir
