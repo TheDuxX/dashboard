@@ -28,10 +28,10 @@ interface FormData {
   category: string;
   mark: string;
   images: string[];
-  views: number; // Certifique-se de que é 'views'
+  views: number;
 }
 
-const Form = () => {
+const CreateProductForm = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -39,14 +39,14 @@ const Form = () => {
   const [marks, setMarks] = useState<Mark[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [imagesUploaded, setImagesUploaded] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
     price: 0,
     reference: "",
     category: "",
     mark: "",
-    images: [] as string[], // Declare como string[]
+    images: [],
     views: 0,
   });
 
@@ -85,7 +85,7 @@ const Form = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Ajuste aqui
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -280,22 +280,23 @@ const Form = () => {
             </select>
           </div>
         </div>
-
-        <div className="flex gap-2">
+        {/* Botão de enviar */}
+        <div className="flex flex-row gap-2 w-full">
           <Button
-            className="w-full"
+            type="button"
             onClick={handleClickUploadImagesButton}
-            disabled={isPending}
+            disabled={files.length === 0 || isLoading || isPending}
+            className="your-button-class w-full"
           >
-            Salvar
+            {isLoading || isPending ? "Carregando..." : "Criar Produto"}
           </Button>
           <Button
             type="button"
-            className="w-full"
             variant="destructive"
-            onClick={() => router.push("./products")}
+            className="w-full"
+            onClick={() => router.back()}
           >
-            Cancelar
+            <p>Cancelar</p>
           </Button>
         </div>
       </form>
@@ -303,4 +304,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default CreateProductForm;

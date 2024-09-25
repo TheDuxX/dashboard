@@ -1,82 +1,62 @@
 "use client";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/app/_components/ui/form";
-import { useForm } from "react-hook-form";
-import { Input } from "@/app/_components/ui/input";
-import { Textarea } from "@/app/_components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/_components/ui/select";
-import { Button } from "@/app/_components/ui/button";
+
 import { ChangeEvent, useEffect, useRef, useState, useTransition } from "react";
-import { PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { convertDecimalToNumber } from "@/app/_lib/utils";
+import { Button } from "@/app/_components/ui/button";
+import { Label } from "@/app/_components/ui/label";
+import { Input } from "@/app/_components/ui/input";
+import { convertBlobUrlToFile } from "@/app/_lib/utils";
 import { uploadImage } from "@/supabase/storage/client";
+import { PlusIcon, XIcon } from "lucide-react";
 
-const formSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  reference: z.string(),
-  category: z.string(),
-  mark: z.string(),
-  images: z
-    .string()
-    .array()
-    .nonempty({ message: "Deve conter pelo menos uma imagem." }),
-  price: z.number({ message: "Campo obrigatório" }),
-});
-
-interface EditProductFormPageProps {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    reference: string;
-    status: boolean;
-    date: Date;
-    price: Decimal | number;
-    categoryId: string;
-    markId: string;
-    imageUrls: string[];
-    views: number | null;
-    category: Category;
-    mark: Mark;
-  };
+interface Category {
+  id: string;
+  name: string;
 }
 
-type Category = {
+interface Mark {
   id: string;
   name: string;
-};
+}
 
-type Mark = {
-  id: string;
+interface FormData {
   name: string;
-};
+  description: string;
+  price: number;
+  reference: string;
+  category: string;
+  mark: string;
+  images: string[];
+  views: number;
+}
 
-export function EditProductForm({ product }: EditProductFormPageProps) {
+const CreateProductForm = () => {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls);
   const [files, setFiles] = useState<File[]>([]);
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [imagesUploaded, setImagesUploaded] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    description: "",
+    price: 0,
+    reference: "",
+    category: "",
+    mark: "",
+    images: [],
+    views: 0,
+  });
 
+  // Função para lidar com a mudança de entrada
+  const handleInputChange = (e: { target: { id: any; value: any } }) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  // Função para buscar categorias e marcas do banco de dados
   useEffect(() => {
     const fetchCategoriesAndMarks = async () => {
       try {
@@ -97,20 +77,35 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
     fetchCategoriesAndMarks();
   }, []);
 
-  const productPrice = convertDecimalToNumber(product.price);
+  const submitFormData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: product.name,
-      description: product.description,
-      reference: product.reference,
-      category: product.categoryId,
-      mark: product.markId,
-      images: product.imageUrls,
-      price: productPrice,
-    },
-  });
+      if (response.ok) {
+        const product = await response.json();
+        router.push(`/product/${product.id}`);
+      } else {
+        alert("Erro ao criar o produto");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Erro ao enviar o formulário. Por favor, tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Funções para upload da imagem e criação das URLs
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -126,237 +121,188 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
     setImageUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
   };
 
-  const submitFormData = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsLoading(true);
-      const uploadedImageUrls = await Promise.all(
-        files.map(async (file) => {
-          const { imageUrl, error } = await uploadImage({
-            file,
-            bucket: "tratorino-pics",
-          });
+  const [isPending, startTransition] = useTransition();
 
-          if (error) {
-            throw new Error("Erro ao fazer upload da imagem.");
-          }
+  const handleClickUploadImagesButton = async () => {
+    startTransition(async () => {
+      let urls = [];
+      for (const url of imageUrls) {
+        const imageFile = await convertBlobUrlToFile(url);
 
-          return imageUrl;
-        })
-      );
+        const { imageUrl, error } = await uploadImage({
+          file: imageFile,
+          bucket: "tratorino-pics",
+        });
 
-      const updatedValues = {
-        ...values,
-        images: [...imageUrls, ...uploadedImageUrls],
-      };
+        if (error) {
+          console.error(error);
+          return;
+        }
 
-      const response = await fetch(`/api/products/${product.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedValues),
-      });
-
-      if (response.ok) {
-        const updatedProduct = await response.json();
-        router.push(`/product/${updatedProduct.id}`);
-      } else {
-        alert("Erro ao atualizar o produto");
+        urls.push(imageUrl);
       }
-    } catch (error) {
-      console.error("Erro ao enviar o formulário:", error);
-      alert("Erro ao enviar o formulário. Por favor, tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
+
+      setFormData((prev) => ({ ...prev, images: urls }));
+      setImagesUploaded(true);
+    });
   };
+
+  useEffect(() => {
+    if (imagesUploaded) {
+      submitFormData();
+      setImagesUploaded(false);
+    }
+  }, [imagesUploaded, formData.images]);
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center space-y-2">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(submitFormData)}
-            className="flex flex-col space-y-2 w-full"
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="flex flex-col gap-2"
+      >
+        {/* Imagens */}
+        <div className="flex items-center justify-start gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          <input
+            type="file"
+            multiple
+            ref={imageInputRef}
+            hidden
+            onChange={handleImageChange}
+            id="images"
+            placeholder="images"
+          />
+          <Button
+            type="button"
+            onClick={() => imageInputRef.current?.click()}
+            className="min-w-28 min-h-28"
+            variant="dashed"
           >
-            {/* Imagens */}
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="flex items-center justify-start gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-                      <input
-                        type="file"
-                        id="images"
-                        hidden
-                        multiple
-                        ref={imageInputRef}
-                        onChange={handleImageChange}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => imageInputRef.current?.click()}
-                        className="min-w-28 min-h-28"
-                        variant="dashed"
-                      >
-                        <PlusIcon className="text-border" />
-                      </Button>
-                      {imageUrls.map((url, index) => (
-                        <div key={index} className="relative min-w-28 min-h-28">
-                          <Image
-                            src={url}
-                            alt={`img-${index}`}
-                            fill
-                            className="object-cover rounded-md"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="mini"
-                            onClick={() => handleRemoveImage(index)}
-                            className="absolute top-1 right-1"
-                          >
-                            <XIcon />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Nome */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome do produto</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Descrição */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Preço e Referência */}
-            <div className="flex gap-2">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <PlusIcon className="text-border" />
+          </Button>
+          {imageUrls.map((url, index) => (
+            <div key={index} className="relative min-w-28 aspect-square">
+              <Image
+                src={url}
+                fill
+                alt={`img-${index}`}
+                className="object-cover rounded-md"
               />
-              <FormField
-                control={form.control}
-                name="reference"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Referência</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="mini"
+                onClick={() => handleRemoveImage(index)}
+                className="absolute top-1 right-1"
+              >
+                <XIcon />
+              </Button>
             </div>
-
-            {/* Categoria e Marca */}
-            <div className="flex gap-2">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Categoria</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="mark"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Marca</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a marca" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {marks.map((mark) => (
-                          <SelectItem key={mark.id} value={mark.id}>
-                            {mark.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <Button type="submit" className="self-start min-w-28">
-              {isLoading ? "Salvando..." : "Salvar"}
-            </Button>
-            <Button type="submit" className="self-start min-w-28">
-              Cancelar
-            </Button>
-          </form>
-        </Form>
-      </div>
+          ))}
+        </div>
+        {/* Nome */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Nome do Produto</Label>
+          <Input
+            type="text"
+            placeholder="Digite o nome do produto"
+            id="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            autoComplete="false"
+          />
+        </div>
+        {/* Descrição */}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Descrição</Label>
+          <textarea
+            id="description"
+            placeholder="Descreva o produto"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+        </div>
+        {/* Preço e referência */}
+        <div className="flex gap-2">
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor="price">Preço</Label>
+            <Input
+              type="number"
+              placeholder="Digite o preço do produto"
+              id="price"
+              value={formData.price}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor="reference">Ref</Label>
+            <Input
+              type="text"
+              placeholder="Digite a referência do produto"
+              id="reference"
+              value={formData.reference}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+        {/* Categorias e Marcas */}
+        <div className="flex gap-2">
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor="category">Categoria</Label>
+            <select
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="category"
+              value={formData.category}
+              onChange={handleInputChange}
+            >
+              <option value="">Selecione uma categoria</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor="mark">Marca</Label>
+            <select
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              id="mark"
+              value={formData.mark}
+              onChange={handleInputChange}
+            >
+              <option value="">Selecione uma marca</option>
+              {marks.map((mark) => (
+                <option key={mark.id} value={mark.id}>
+                  {mark.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {/* Botão de enviar */}
+        <div className="flex flex-row gap-2 w-full">
+          <Button
+            type="button"
+            onClick={handleClickUploadImagesButton}
+            isLoading={isLoading || isPending}
+            disabled={files.length === 0}
+            className="w-full"
+          >
+            Criar Produto
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            className="w-full"
+            onClick={() => router.back()}
+          >
+            <p>Cancelar</p>
+          </Button>
+        </div>
+      </form>
     </>
   );
-}
+};
+
+export default CreateProductForm;
