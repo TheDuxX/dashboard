@@ -37,15 +37,15 @@ const Products = async () => {
   });
 
   // Converta price de Decimal para number
-  const convertedProducts = products.map(product => ({
+  const convertedProducts = products.map((product) => ({
     ...product,
-    price: parseFloat(product.price.toFixed(2)) // Converte Decimal para number
+    price: parseFloat(product.price.toFixed(2)), // Converte Decimal para number
   }));
 
   return (
     <div className="flex flex-col gap-2 p-2">
       <NavHeader />
-      <ProductList product={convertedProducts}/>
+      <ProductList product={convertedProducts} />
     </div>
   );
 };
