@@ -285,11 +285,10 @@ const CreateProductForm = () => {
           <Button
             type="button"
             onClick={handleClickUploadImagesButton}
-            isLoading={isLoading || isPending}
-            disabled={files.length === 0}
-            className="w-full"
+            disabled={files.length === 0 || isLoading || isPending}
+            className="your-button-class"
           >
-            Criar Produto
+            {isLoading || isPending ? "Carregando..." : "Criar Produto"}
           </Button>
           <Button
             type="button"
