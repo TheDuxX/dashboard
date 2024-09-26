@@ -110,7 +110,7 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
       category: product.categoryId,
       mark: product.markId,
       images: product.imageUrls,
-      price: product.price,
+      price: productPrice,
       status: product.status,
     },
   });
@@ -362,7 +362,9 @@ export function EditProductForm({ product }: EditProductFormPageProps) {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="pl-2">{field.value ? "Produto Ativo" : "Produto Inativo"}</FormLabel>
+                  <FormLabel className="pl-2">
+                    {field.value ? "Produto Ativo" : "Produto Inativo"}
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
