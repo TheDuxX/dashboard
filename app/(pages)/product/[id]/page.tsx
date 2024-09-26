@@ -98,8 +98,8 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
               Editar
             </Button>
           </Link>
-          {/* <StatusChange productId={product.id} status={product.status}/> */}
-          {/* <DeleteProduct productId={product.id}/> */}
+          <StatusChange productId={product.id} status={product.status}/>
+          <DeleteProduct productId={product.id}/>
         </div>
       </div>
     </div>
