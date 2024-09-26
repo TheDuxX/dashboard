@@ -14,8 +14,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/app/_components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/app/_components/ui/radio-group";
 import { Label } from "./ui/label";
 
 interface ProductListProps {
