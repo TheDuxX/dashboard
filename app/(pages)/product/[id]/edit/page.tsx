@@ -2,6 +2,7 @@ import NavHeader from "@/app/_components/nav-header";
 import { db } from "@/app/_lib/prisma";
 import toast from "react-hot-toast";
 import { EditProductForm } from "./_components/form";
+import { FindUniqueProduct } from "@/app/_lib/utils";
 
 interface EditProductPageProps {
   params: {
@@ -14,15 +15,7 @@ const EditProduct = async ({ params }: EditProductPageProps) => {
     return null;
   }
 
-  const product = await db.product.findUnique({
-    where: {
-      id: params.id,
-    },
-    include: {
-      category: true,
-      mark: true,
-    },
-  });
+  const product = await FindUniqueProduct(params.id);
 
   return (
     <div className="p-2 flex flex-col gap-2">

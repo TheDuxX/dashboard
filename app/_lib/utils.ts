@@ -1,6 +1,7 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { db } from "./prisma";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,4 +32,29 @@ export const getErrorMessage = (
 
 export const convertDecimalToNumber = (decimal: Decimal): number => {
   return parseFloat(decimal.toString()); // Converter Decimal para string e depois para número
+};
+
+export const FindManyProducts = async (): Promise<any[]> => {
+  const products = await db.product.findMany({
+    include: {
+      category: true,
+      mark: true,
+    },
+  });
+  return products; // Certifique-se de que está retornando os produtos
+};
+
+// Função para encontrar um produto específico com base no ID
+export const FindUniqueProduct = async (id: string ): Promise<any | null> => {
+  const product = await db.product.findUnique({
+    where: {
+      id: id, // substitui params.id pelo parâmetro que a função recebe
+    },
+    include: {
+      category: true,
+      mark: true,
+    },
+  });
+
+  return product; // Retorna o produto encontrado ou null se não existir
 };

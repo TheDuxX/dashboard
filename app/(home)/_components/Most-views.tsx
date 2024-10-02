@@ -1,17 +1,17 @@
-import { db } from "@/app/_lib/prisma";
+import { FindManyProducts } from "@/app/_lib/utils";
 import Item from "./item";
 
-type category = {
+type Category = {
   id: string;
   name: string;
 };
 
-type mark = {
+type Mark = {
   id: string;
   name: string;
 };
 
-type product = {
+type Product = {
   id: string;
   name: string;
   description: string;
@@ -23,19 +23,14 @@ type product = {
   markId: string;
   imageUrls: string[];
   views: number | null;
-  category: category; // Corrigido para 'categories'
-  mark: mark; // Corrigido para 'marks'
+  category: Category;
+  mark: Mark;
 };
 
 const MostViews = async () => {
-  const product = await db.product.findMany({
-    include: {
-      category: true,
-      mark: true,
-    },
-  });
+  const products = await FindManyProducts(); // Pegando os produtos do banco de dados
 
-  const sortedProducts = [...product]
+  const sortedProducts = [...products] // Agora usamos 'products', não 'product'
     .sort((a, b) => (b.views || 0) - (a.views || 0));
 
   return (
@@ -43,7 +38,7 @@ const MostViews = async () => {
       <h2 className="font-semibold text-lg">Mais vistos</h2>
       <div className="rounded-md flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
         {sortedProducts.slice(0, 5).map((product) => (
-            <Item key={product.id} product={product} />
+          <Item key={product.id} product={product} />
         ))}
       </div>
     </>

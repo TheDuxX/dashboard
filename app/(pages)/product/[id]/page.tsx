@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import StatusChange from "./_component/status-button";
 import DeleteProduct from "./_component/delete-button";
+import { FindUniqueProduct } from "@/app/_lib/utils";
 
 interface ProdctDetailsPageProps {
   params: {
@@ -22,23 +23,14 @@ interface ProdctDetailsPageProps {
 // Se o ID não for encontrado a função retorna nula, TODO: implementar retorno para página inicial
 const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
   if (!params.id) {
-    return null;
+    return <div>Produto não encontrado</div>;
   }
 
-  //Faz a conexão com o Banco de Dados e retorna um padrão único correspondente ao ID
-  const product = await db.product.findUnique({
-    where: {
-      id: params.id,
-    },
-    include: {
-      category: true,
-      mark: true,
-    },
-  });
+  const product = await FindUniqueProduct(params.id); // Chame a função passando o ID do produto
 
   // Se o produto não for encontrado a função retorna nula, TODO: implementar retorno para página inicial
   if (!product) {
-    return null;
+    return <div>Produto não encontrado</div>;
   }
 
   return (
@@ -51,7 +43,7 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
           }}
         >
           <CarouselContent className="static">
-            {product.imageUrls.map((url, index) => (
+            {product.imageUrls.map((url: string, index: number) => (
               <CarouselItem
                 key={index}
                 className="relative aspect-square rounded-lg"
@@ -98,8 +90,8 @@ const ProductDetailsPage = async ({ params }: ProdctDetailsPageProps) => {
               Editar
             </Button>
           </Link>
-          <StatusChange productId={product.id} status={product.status}/>
-          <DeleteProduct productId={product.id}/>
+          <StatusChange productId={product.id} status={product.status} />
+          <DeleteProduct productId={product.id} />
         </div>
       </div>
     </div>

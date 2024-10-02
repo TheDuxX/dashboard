@@ -1,6 +1,7 @@
 import ProductList from "@/app/_components/list";
 import NavHeader from "@/app/_components/nav-header";
 import { db } from "@/app/_lib/prisma";
+import { FindManyProducts } from "@/app/_lib/utils";
 
 type category = {
   id: string;
@@ -29,12 +30,7 @@ type Product = {
 };
 
 const Products = async () => {
-  const products = await db.product.findMany({
-    include: {
-      category: true,
-      mark: true,
-    },
-  });
+  const products = await FindManyProducts();
 
   // Converta price de Decimal para number
   const convertedProducts = products.map((product) => ({
