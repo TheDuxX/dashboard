@@ -1,6 +1,4 @@
 import NavHeader from "@/app/_components/nav-header";
-import { db } from "@/app/_lib/prisma";
-import toast from "react-hot-toast";
 import { EditProductForm } from "./_components/form";
 import { FindUniqueProduct } from "@/app/_lib/utils";
 
@@ -19,7 +17,7 @@ const EditProduct = async ({ params }: EditProductPageProps) => {
 
   return (
     <div className="p-2 flex flex-col gap-2">
-      {/* <NavHeader /> */}
+      <NavHeader />
       <EditProductForm product={product} />
     </div>
   );
