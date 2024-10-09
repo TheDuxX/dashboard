@@ -8,49 +8,45 @@ import {
 import Profile from "./_components/profile";
 import NewUser from "./_components/new-user";
 import { Card, CardContent } from "@/app/_components/ui/card";
-import NewMark from "./_components/new-mark";
-import NewCategory from "./_components/new-category";
+import { FindManyCategories, FindManyProducts } from "@/app/_lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableRow,
+} from "@/app/_components/ui/table";
+import { Pen, Trash2 } from "lucide-react";
+import UserConfig from "./_components/user-config";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/app/_components/ui/dialog";
+import { Button } from "@/app/_components/ui/button";
+import FiltersConfig from "./_components/filters";
 
 const Config = () => {
   return (
-    <div className="flex flex-col gap-1 p-2">
+    <div className="flex flex-col gap-2 p-2">
       <NavHeader />
-      <div className="w-full">
-        <Tabs defaultValue="profile" className="w-full space-y-0">
-          <TabsList className="grid w-full grid-cols-3 m-0 p-0 space-x-2">
-            <TabsTrigger value="profile" className="rounded-b-none">
-              Perfil
-            </TabsTrigger>
-            <TabsTrigger value="new-user" className="rounded-b-none">
-              Novo usuário
-            </TabsTrigger>
-            <TabsTrigger value="test" className="rounded-b-none">
-              Novo filtro
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="profile">
-            <Card className="rounded-t-none">
-              <CardContent className="p-0 py-2">
-                <Profile />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="new-user">
-            <Card className="rounded-t-none">
-              <CardContent className="p-0 py-2">
-                <NewUser />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="test">
-            <Card className="rounded-t-none">
-              <CardContent className="p-0 py-2  min-h-20 space-y-4">
-                <NewCategory />
-                <NewMark />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+      <div className="grid grid-cols-2 gap-2">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="aspect-square w-full h-auto">Usuários</Button>
+          </DialogTrigger>
+          <DialogContent className="w-[95%] rounded-lg flex items-center justify-center pt-10 bg-gray-100">
+            <UserConfig />
+          </DialogContent>
+        </Dialog>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="aspect-square w-full h-auto">Filtros</Button>
+          </DialogTrigger>
+          <DialogContent className="w-[95%] rounded-lg flex items-center justify-center pt-10 bg-gray-100">
+            <FiltersConfig />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

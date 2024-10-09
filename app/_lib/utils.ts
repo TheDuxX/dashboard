@@ -44,8 +44,18 @@ export const FindManyProducts = async (): Promise<any[]> => {
   return products; // Certifique-se de que está retornando os produtos
 };
 
+export const FindManyCategories = async () => {
+  const categories = await db.category.findMany({});
+  return categories;
+};
+
+export const FindManyMark = async () => {
+  const marks = await db.mark.findMany({});
+  return marks;
+};
+
 // Função para encontrar um produto específico com base no ID
-export const FindUniqueProduct = async (id: string ): Promise<any | null> => {
+export const FindUniqueProduct = async (id: string): Promise<any | null> => {
   const product = await db.product.findUnique({
     where: {
       id: id, // substitui params.id pelo parâmetro que a função recebe
